@@ -1,36 +1,61 @@
 import React, { Component } from 'react';
 import Die from './Die';
+import './RollDice.css';
 
 class RollDice extends Component {
 	constructor(props) {
     super(props);
     this.state = {
-      numOne: 1,
-      numTwo: 1,
+      numOne: null,
+      numTwo: null,
+      hasRolled: false,
+      isRolling: false,
     }
-    this.randomNumber = this.randomNumber.bind(this);
+    this.roll = this.roll.bind(this);
   }
 
-  randomNumber() {
-    const newNumOne = Math.floor(Math.random() * 5) + 1;
-    const newNumTwo = Math.floor(Math.random() * 5) + 1;
+  static defaultProps = {
+    numbers: {
+      1: 'one',
+      2: 'two',
+      3: 'three',
+      4: 'four',
+      5: 'five',
+      6: 'six',
+    }
+  }
+
+  roll() {
+    const newNumOne = this.props.numbers[Math.floor(Math.random() * 6) + 1];
+    const newNumTwo = this.props.numbers[Math.floor(Math.random() * 6) + 1];
 
     this.setState({
       numOne: newNumOne,
       numTwo: newNumTwo,
+      hasRolled: true,
+      isRolling: true,
     })
+
+    setTimeout(() => {
+      this.setState({isRolling: false});
+    }, 1000)
   }
 
   render() {
     return (
-      <div>
+      <div className="RollDice">
+        {
+          this.state.hasRolled === false ?
+          <h1>Roll the dice!</h1> :
+          <div>
+            <Die num={this.state.numOne} isRolling={this.state.isRolling}/>
+            <Die num={this.state.numTwo} isRolling={this.state.isRolling} />
+          </div>
+        }
         <div>
-          <Die num={this.state.numOne} />
-          <Die num={this.state.numTwo} />
-        </div>
-        <br />
-        <div>
-          <button onClick={this.randomNumber}>Roll dice!</button>
+          <button onClick={this.roll} disabled={this.state.isRolling}>
+            {this.state.isRolling ? 'Rolling...' : 'Roll dice!'}
+          </button>
         </div>
       </div>
     )
